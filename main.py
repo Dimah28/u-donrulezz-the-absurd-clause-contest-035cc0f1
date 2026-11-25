@@ -36,13 +36,12 @@ def ensure_one_sentence(text):
             reject(f"clause holds more than one sentence (found {mark!r})")
 
 
-def validate_clause(raw):
-    """Run the bounty gate over the clause; return the cleaned text.
+def check_shape(text):
+    """Reject the clause if its shape breaks the bounty gate.
 
-    The gate: 1 to LIMIT characters, not blank, a single line, ending
-    in sentence punctuation, and exactly one sentence long.
+    Shape: not blank, a single line, within LIMIT characters, ending
+    in sentence punctuation.
     """
-    text = raw.strip()
     if not text:
         reject("clause is empty or only whitespace")
     if "\n" in text or "\r" in text:
@@ -51,6 +50,16 @@ def validate_clause(raw):
         reject(f"clause is {len(text)} characters, over the {LIMIT} limit")
     if text[-1] not in ENDERS:
         reject("clause must end with sentence-ending punctuation")
+
+
+def validate_clause(raw):
+    """Run the bounty gate over the clause; return the cleaned text.
+
+    The gate: 1 to LIMIT characters, not blank, a single line, ending
+    in sentence punctuation, and exactly one sentence long.
+    """
+    text = raw.strip()
+    check_shape(text)
     ensure_one_sentence(text)
     return text
 
